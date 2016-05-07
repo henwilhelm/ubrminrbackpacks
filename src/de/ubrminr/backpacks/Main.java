@@ -10,6 +10,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         this.registerCommands();
+        this.createRecipes();
     }
 
     @Override
@@ -19,5 +20,10 @@ public class Main extends JavaPlugin {
 
     private void registerCommands() {
         this.getCommand("ubp").setExecutor(new CommandUbp());
+    }
+
+    private void createRecipes() {
+        Recipes r = new Recipes();
+        r.load();
     }
 }
