@@ -1,0 +1,9 @@
+name: UbrMinrBackpacks
+version: 0.0.1
+author: UbrMinr
+main: de.ubrminr.backpacks.Main
+
+commands:
+  ubp:
+    description: UbrMinr Backpack commands
+    usage: /ubp
