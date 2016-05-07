@@ -6,8 +6,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+
 /**
- * Created by hendrik on 07.05.2016.
+ * Created on 07.05.2016.
  */
 public class Recipes {
 
@@ -22,6 +24,11 @@ public class Recipes {
         ItemMeta meta = backpack.getItemMeta();
         // @todo chatcolor
         meta.setDisplayName("Backpack " + size);
+
+        ArrayList<String> lore = new ArrayList<String>();
+        lore.add(Main.META_DATA_LORE_IDENTIFIER);
+        meta.setLore(lore);
+
         backpack.setItemMeta(meta);
 
         ShapedRecipe recipe = new ShapedRecipe(backpack);

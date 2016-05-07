@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 /**
- * Created by hendrik on 07.05.2016.
+ * Created on 07.05.2016.
  */
 public class CommandUbp implements CommandExecutor {
 
