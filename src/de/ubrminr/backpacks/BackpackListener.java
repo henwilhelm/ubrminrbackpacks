@@ -1,9 +1,7 @@
 package de.ubrminr.backpacks;
 
 import de.ubrminr.backpacks.store.InventoryStore;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +10,7 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -75,13 +74,49 @@ public class BackpackListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        Player player = (Player) event.getWhoClicked();
         ItemStack item = event.getCurrentItem();
-        if (this.isBackpackStack(item) && inventoryStore.hasOpenInventory(player)) {
+
+        if (!this.isBackpackStack(item)) {
+            return;
+        }
+
+        Player player = (Player) event.getWhoClicked();
+
+        if (inventoryStore.hasOpenInventory(player)) {
             event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "Not allowed to move backpacks if one is open");
         }
+
+        InventoryView view = event.getView();
+        Inventory top = view.getTopInventory();
+        Inventory bottom = view.getBottomInventory();
+        boolean isTopPlayer = top.getHolder() instanceof Player;
+        boolean isBottomPlayer = bottom.getHolder() instanceof Player;
+
+        // @todo make sure this covers all cases
+        if (!isTopPlayer || !isBottomPlayer) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "Not allowed to move backpacks in this context");
+        }
     }
+
+//    @EventHandler
+//    public void onInventoryMove(InventoryMoveItemEvent event) {
+//        ItemStack item = event.getItem();
+//        System.out.println("move event " + item.toString());
+//
+//        if (!this.isBackpackStack(item)) {
+//            return;
+//        }
+//
+//        InventoryType type =  event.getDestination().getType();
+//        System.out.println(type);
+//        if (!type.equals(InventoryType.PLAYER)) {
+//            event.setCancelled(true);
+//            Player player = (Player) event.getInitiator().getHolder();
+//            player.sendMessage(ChatColor.RED + "Only allowed to move backpacks within player inventory or chests");
+//        }
+//    }
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
