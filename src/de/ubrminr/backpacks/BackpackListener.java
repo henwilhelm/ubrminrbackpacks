@@ -1,18 +1,20 @@
 package de.ubrminr.backpacks;
 
+import de.ubrminr.backpacks.store.InventoryStore;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +25,11 @@ public class BackpackListener implements Listener {
 
     private static String ID_PREFIX = "ID:";
 
-    private HashMap<String, Inventory> inventories = new HashMap<>();
+    private InventoryStore inventoryStore;
+
+    public BackpackListener(InventoryStore inventoryStore) {
+        this.inventoryStore = inventoryStore;
+    }
 
     @EventHandler
     public void onPlayerUse(PlayerInteractEvent event) {
@@ -36,12 +42,9 @@ public class BackpackListener implements Listener {
         event.setCancelled(true);
 
         Player player = event.getPlayer();
-
         String id = this.getBackpackId(item);
-        if (!this.inventories.containsKey(id)) {
-            this.inventories.put(id, Bukkit.getServer().createInventory(player, 9, id));
-        }
-        Inventory inventory = this.inventories.get(id);
+
+        Inventory inventory = inventoryStore.openInventory(player, id);
 
         player.openInventory(inventory);
     }
@@ -66,6 +69,26 @@ public class BackpackListener implements Listener {
     public void onDrop(PlayerDropItemEvent event) {
         if (this.isBackpack(event.getItemDrop())) {
             event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "Not allowed to drop backpack");
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        ItemStack item = event.getCurrentItem();
+        if (this.isBackpackStack(item) && inventoryStore.hasOpenInventory(player)) {
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "Not allowed to move backpacks if one is open");
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+
+        if (inventoryStore.hasOpenInventory(player)) {
+            inventoryStore.closeInventory(player);
         }
     }
 

@@ -1,5 +1,6 @@
 package de.ubrminr.backpacks;
 
+import de.ubrminr.backpacks.store.InventoryStore;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -9,8 +10,12 @@ public class Main extends JavaPlugin {
 
     public static String META_DATA_LORE_IDENTIFIER = "Backpack";
 
+    private InventoryStore inventoryStore;
+
     @Override
     public void onEnable() {
+        inventoryStore = new InventoryStore();
+
         this.registerCommands();
         this.createRecipes();
         this.registerEventListeners();
@@ -31,6 +36,8 @@ public class Main extends JavaPlugin {
     }
 
     private void registerEventListeners() {
-        getServer().getPluginManager().registerEvents(new BackpackListener(), this);
+        getServer().getPluginManager().registerEvents(new BackpackListener(
+                inventoryStore
+        ), this);
     }
 }
